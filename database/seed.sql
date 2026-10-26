@@ -1,0 +1,1 @@
+INSERT INTO departments(name,description) VALUES ('IT Support','Network and technology'),('Hostel','Residential facilities'),('Maintenance','Campus repairs'),('Library','Library services'),('Accounts','Fees and payments'),('Administration','General administration'),('Academic','Teaching and learning'),('Security','Campus safety') ON CONFLICT(name) DO NOTHING;

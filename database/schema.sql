@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS departments (id SERIAL PRIMARY KEY, name TEXT UNIQUE NOT NULL, description TEXT NOT NULL DEFAULT '');
+CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name TEXT NOT NULL, email TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL, role TEXT NOT NULL CHECK(role IN ('STUDENT','STAFF','ADMIN')), department_id INTEGER REFERENCES departments(id), created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS complaints (id SERIAL PRIMARY KEY, title TEXT NOT NULL, description TEXT NOT NULL, location TEXT NOT NULL DEFAULT '', student_id INTEGER NOT NULL REFERENCES users(id), category TEXT NOT NULL DEFAULT 'Other', priority TEXT NOT NULL DEFAULT 'MEDIUM' CHECK(priority IN ('LOW','MEDIUM','HIGH','CRITICAL')), department_id INTEGER REFERENCES departments(id), status TEXT NOT NULL DEFAULT 'SUBMITTED' CHECK(status IN ('SUBMITTED','ASSIGNED','IN_PROGRESS','RESOLVED','REJECTED')), ai_reason TEXT NOT NULL DEFAULT '', created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), resolved_at TIMESTAMPTZ);
+CREATE TABLE IF NOT EXISTS complaint_history (id SERIAL PRIMARY KEY, complaint_id INTEGER NOT NULL REFERENCES complaints(id) ON DELETE CASCADE, old_status TEXT, new_status TEXT NOT NULL, changed_by INTEGER REFERENCES users(id), comment TEXT NOT NULL DEFAULT '', created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS knowledge_documents (id SERIAL PRIMARY KEY, filename TEXT UNIQUE NOT NULL, content TEXT NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+CREATE INDEX IF NOT EXISTS idx_complaints_student ON complaints(student_id);
+CREATE INDEX IF NOT EXISTS idx_complaints_department ON complaints(department_id);
+CREATE INDEX IF NOT EXISTS idx_complaints_status ON complaints(status);
+CREATE INDEX IF NOT EXISTS idx_complaints_priority ON complaints(priority);
